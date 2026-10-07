@@ -11,8 +11,8 @@ export type TradeStatus =
   | { state: "idle" }
   | { state: "pending" | "ok" | "error"; msg: string; address?: string };
 
-// One status for the whole page, so a quick-long from a list row and the trade
-// panel report in the same place.
+// One status for the whole page, so a quick-long from the markets table and
+// the order form report in the same place.
 let status: TradeStatus = { state: "idle" };
 const listeners = new Set<() => void>();
 function setStatus(next: TradeStatus) {
@@ -57,28 +57,41 @@ export function useTrade() {
     setTimeout(refresh, 1500);
   }, [refresh]);
 
-  /** Market order: `margin` USD at `leverage`x, long or short. */
+  /**
+   * Opens `margin` USD at `leverage`x. Without `limitPx` it is a market order
+   * (immediate-or-cancel at mark +/- slippage); with it, a resting limit order.
+   */
   const open = useCallback(
-    async (m: Market, isLong: boolean, margin: number, leverage: number) => {
+    async (m: Market, isLong: boolean, margin: number, leverage: number, limitPx?: number) => {
       if (!address) return login();
       if (status.state === "pending") return;
       const lev = Math.max(1, Math.min(Math.floor(leverage), m.maxLev));
       const notional = margin * lev;
       const side = isLong ? "Long" : "Short";
       if (!(notional >= MIN_NOTIONAL)) {
-        return setStatus({ state: "error", msg: `Minimum position is $${MIN_NOTIONAL}. Raise the size or leverage.` });
+        return setStatus({ state: "error", msg: `Minimum order is $${MIN_NOTIONAL}. Raise the size or leverage.` });
       }
-      const size = formatSize(notional / m.mark, m.szDecimals);
+      const isLimit = limitPx !== undefined;
+      if (isLimit && !(limitPx > 0)) return setStatus({ state: "error", msg: "Enter a limit price." });
+      const refPx = isLimit ? limitPx : m.mark;
+      const size = formatSize(notional / refPx, m.szDecimals);
       if (!(Number(size) > 0)) return setStatus({ state: "error", msg: "Size is too small for this market." });
 
       setStatus({ state: "pending", msg: `${side} ${m.coin} ${lev}x · sending…` });
       try {
         const ex = await getExchange();
         await ex.updateLeverage({ asset: m.idx, isCross: !m.onlyIsolated, leverage: lev });
-        const limit = m.mark * (isLong ? 1 + slippage / 100 : 1 - slippage / 100);
+        const px = isLimit ? limitPx : m.mark * (isLong ? 1 + slippage / 100 : 1 - slippage / 100);
         const res = await ex.order({
           orders: [
-            { a: m.idx, b: isLong, p: formatPrice(limit, m.szDecimals), s: size, r: false, t: { limit: { tif: "Ioc" } } },
+            {
+              a: m.idx,
+              b: isLong,
+              p: formatPrice(px, m.szDecimals),
+              s: size,
+              r: false,
+              t: { limit: { tif: isLimit ? "Gtc" : "Ioc" } },
+            },
           ],
           grouping: "na",
         });
@@ -120,7 +133,25 @@ export function useTrade() {
     [address, login, getExchange, slippage, settle],
   );
 
-  return { open, close };
+  /** Cancels one resting order. */
+  const cancel = useCallback(
+    async (m: Market, oid: number) => {
+      if (!address || status.state === "pending") return;
+      setStatus({ state: "pending", msg: `Cancelling ${m.coin} order…` });
+      try {
+        const ex = await getExchange();
+        await ex.cancel({ cancels: [{ a: m.idx, o: oid }] });
+        setStatus({ state: "ok", msg: `${m.coin} order cancelled`, address });
+      } catch (err) {
+        setStatus({ state: "error", msg: explain(err), address });
+      } finally {
+        settle();
+      }
+    },
+    [address, getExchange, settle],
+  );
+
+  return { open, close, cancel };
 }
 
 function report(st: OrderStatus | undefined, label: string, address: string) {
@@ -130,6 +161,8 @@ function report(st: OrderStatus | undefined, label: string, address: string) {
       msg: `${label} · ${st.filled.totalSz} @ $${fmtPrice(Number(st.filled.avgPx))}`,
       address,
     });
+  } else if (st && typeof st === "object" && st.resting) {
+    setStatus({ state: "ok", msg: `${label} · limit order placed`, address });
   } else if (st && typeof st === "object" && st.error) {
     setStatus({ state: "error", msg: explain(st.error), address });
   } else {

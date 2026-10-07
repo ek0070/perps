@@ -33,7 +33,7 @@ const SECTIONS: [string, string][] = [
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto min-h-dvh max-w-2xl bg-black px-4 pb-24 sm:px-6">
+    <div className="mx-auto min-h-dvh max-w-2xl bg-bg px-4 pb-24 sm:px-6">
       <nav className="flex h-20 items-center">
         <Link href="/" className="flex items-center gap-3">
           <Logo size={30} />

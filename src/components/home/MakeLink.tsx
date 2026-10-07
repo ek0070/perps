@@ -56,7 +56,7 @@ export function MakeLink() {
     });
 
   return (
-    <div className="rounded-3xl border border-white/15 bg-black p-5 shadow-[0_0_80px_rgba(255,255,255,0.06)] sm:p-8">
+    <div className="rounded-3xl border border-line bg-panel p-5 shadow-[0_0_80px_rgba(139,92,246,0.06)] sm:p-8">
       <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row">
         <input
           value={input}
@@ -69,9 +69,9 @@ export function MakeLink() {
           aria-label="Perp ticker"
           autoComplete="off"
           spellCheck={false}
-          className="h-13 min-w-0 shrink-0 rounded-2xl border sm:flex-1 border-white/20 bg-transparent px-4 font-mono text-base outline-none transition placeholder:text-white/30 focus:border-white"
+          className="h-13 min-w-0 shrink-0 rounded-2xl border sm:flex-1 border-line bg-transparent px-4 font-mono text-base outline-none transition placeholder:text-muted focus:border-accent"
         />
-        <button className="h-13 shrink-0 rounded-2xl bg-white px-6 font-semibold text-black transition hover:bg-white/85">Make link</button>
+        <button className="h-13 shrink-0 rounded-2xl btn-brand px-6 font-semibold text-white transition">Make link</button>
       </form>
 
       <div className="mt-3 flex min-h-8 flex-wrap items-center gap-2">
@@ -84,7 +84,7 @@ export function MakeLink() {
             <button
               key={s}
               onClick={() => pick(s)}
-              className="h-8 rounded-lg border border-white/20 px-3 font-mono text-xs text-white/80 transition hover:border-white hover:bg-white hover:text-black"
+              className="h-8 rounded-lg border border-line px-3 font-mono text-xs text-white/80 transition hover:border-accent hover:text-white"
             >
               {s}
             </button>
@@ -93,12 +93,12 @@ export function MakeLink() {
       </div>
 
       {coin && (
-        <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-white/15 p-3 sm:flex-row sm:items-center">
+        <div className="mt-3 flex flex-col gap-3 rounded-2xl border border-line p-3 sm:flex-row sm:items-center">
           <code className="min-w-0 flex-1 truncate px-1 font-mono text-sm">{link}</code>
           <div className="flex gap-2">
             <button
               onClick={copy}
-              className="h-10 flex-1 rounded-xl border border-white/25 px-4 text-sm font-semibold transition hover:border-white hover:bg-white hover:text-black sm:flex-none"
+              className="h-10 flex-1 rounded-xl border border-line px-4 text-sm font-semibold transition hover:border-accent hover:text-white sm:flex-none"
             >
               {copied ? "Copied" : "Copy"}
             </button>
@@ -106,7 +106,7 @@ export function MakeLink() {
               href={`https://x.com/intent/post?url=${encodeURIComponent(link)}`}
               target="_blank"
               rel="noopener"
-              className="h-10 flex-1 whitespace-nowrap rounded-xl bg-white px-4 text-center text-sm font-semibold leading-10 text-black transition hover:bg-white/85 sm:flex-none"
+              className="h-10 flex-1 whitespace-nowrap rounded-xl btn-brand px-4 text-center text-sm font-semibold leading-10 text-white transition sm:flex-none"
             >
               Post to X
             </a>

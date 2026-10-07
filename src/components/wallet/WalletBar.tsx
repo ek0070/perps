@@ -29,24 +29,24 @@ export function WalletBar({ loginHref }: { loginHref: string }) {
     });
   };
 
-  const btn = "h-7 rounded-lg border border-white/25 px-2.5 text-xs font-semibold transition hover:border-white hover:bg-white hover:text-black";
+  const btn = "h-7 rounded-lg border border-line px-2.5 text-xs font-semibold transition hover:border-accent hover:text-white";
 
   return (
     <div className="flex h-9 items-center justify-between gap-2 text-xs">
       {!configured ? (
-        <span className="text-white/50">Wallet login is not configured.</span>
+        <span className="text-muted">Wallet login is not configured.</span>
       ) : !ready ? (
         <span className="skel h-5 w-40" />
       ) : !address ? (
         <>
-          <span className="truncate text-white/50">Log in to get a wallet and trade.</span>
+          <span className="truncate text-muted">Log in to get a wallet and trade.</span>
           <span className="flex shrink-0 items-center gap-1.5">
             {framed && (
-              <a href={loginHref} target="_blank" rel="noopener" className="px-1 text-white/50 underline-offset-2 transition hover:text-white hover:underline">
+              <a href={loginHref} target="_blank" rel="noopener" className="px-1 text-muted underline-offset-2 transition hover:text-white hover:underline">
                 New tab
               </a>
             )}
-            <button onClick={login} className={`${btn} border-white bg-white text-black hover:bg-white/85`}>
+            <button onClick={login} className={`${btn} btn-brand border-transparent`}>
               Log in
             </button>
           </span>
@@ -63,7 +63,7 @@ export function WalletBar({ loginHref }: { loginHref: string }) {
             <button onClick={() => setDeposit(true)} className={btn}>
               Deposit
             </button>
-            <button onClick={logout} className="px-1 text-white/40 transition hover:text-white">
+            <button onClick={logout} className="px-1 text-muted transition hover:text-white">
               Log out
             </button>
           </span>

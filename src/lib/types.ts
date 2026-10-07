@@ -44,3 +44,6 @@ export type Trade = { tid: number; time: number; px: number; sz: number; side: "
 
 export const INTERVALS = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 export type Interval = (typeof INTERVALS)[number];
+
+export type BookLevel = { px: number; sz: number };
+export type Book = { bids: BookLevel[]; asks: BookLevel[] };

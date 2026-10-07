@@ -7,13 +7,14 @@ Market data and order execution are Hyperliquid; wallets are Privy embedded wall
 
 | Route | What it is |
 | --- | --- |
-| `/` and `/pulse` | The terminal: Movers / Volume / Funding columns, live. Tabs on phones. |
-| `/t/<COIN>` | The link you post. Player-card + Open Graph tags in `<head>`, full terminal in the body. |
+| `/` | The trading screen, opened on BTC: market bar, candle chart with volume, order book, trades, order ticket (market and limit), positions and open orders. |
+| `/pulse` | Every market in one sortable, searchable table. |
+| `/t/<COIN>` | The link you post. Player-card + Open Graph tags in `<head>`, the trading screen for that market in the body. |
 | `/embed/<COIN>` | The 480x480 player X frames: price, chart, wallet, Long / Short, close. |
-| `/t/pulse`, `/embed/pulse` | Share link and player for the whole live feed. |
+| `/t/pulse`, `/embed/pulse` | Share link and player for the markets table. |
 | `/about`, `/terms` | Landing page with the link maker; terms. |
 | `/api/markets`, `/api/markets/stream` | All markets as JSON; the same as server-sent events (`?coin=BTC` for one). |
-| `/api/candles/<COIN>`, `/api/trades/<COIN>` | Chart candles and the recent-trades tape. |
+| `/api/candles/<COIN>`, `/api/trades/<COIN>`, `/api/book/<COIN>` | Chart candles, the recent-trades tape and the order book. |
 | `/api/preview/<COIN>`, `/api/preview/pulse` | Generated 1200x630 card images. |
 
 `<COIN>` is a Hyperliquid perp ticker (`BTC`, `ETH`, `SOL`, `HYPE`, `kPEPE`, ...). Unknown tickers return 404.
@@ -43,7 +44,8 @@ build, so changing one requires a redeploy.
 - Deposit: send USDC on Arbitrum to that address, then "Move USDC to trading account" sends it to the Hyperliquid
   bridge (minimum 5 USDC, needs a little ETH on Arbitrum for gas). Or send USDC to the address from an existing
   Hyperliquid account, which is instant and free.
-- Long / Short: sets leverage, then places an immediate-or-cancel order priced at mark +/- slippage
+- Limit orders rest on the book until filled or cancelled from the Open orders tab.
+- Long / Short (market): sets leverage, then places an immediate-or-cancel order priced at mark +/- slippage
   (default 1%, changeable in Settings). Margin presets $10 / $50 / $100 or custom; minimum position is $10.
 - Close 25% / 50% / 100%: a reduce-only order against the open position.
 - Orders are signed in the browser by the user's wallet and sent straight to Hyperliquid. The server never sees a key.

@@ -47,7 +47,7 @@ export function TradeStatusLine({ floating = false }: { floating?: boolean }) {
     if (!body) return null;
     return (
       <div className="pointer-events-none fixed inset-x-0 bottom-3 z-40 flex justify-center px-3">
-        <div className="pointer-events-auto flex h-9 max-w-full items-center justify-between gap-3 rounded-xl border border-white/25 bg-black px-3 text-xs shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+        <div className="pointer-events-auto flex h-9 max-w-full items-center justify-between gap-3 rounded-xl border border-line bg-panel px-3 text-xs shadow-[0_0_30px_rgba(139,92,246,0.15)]">
           {body}
         </div>
       </div>

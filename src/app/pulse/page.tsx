@@ -1,7 +1,7 @@
-import { Trenches } from "@/components/markets/Trenches";
+import { MarketsPage } from "@/components/markets/MarketsPage";
 
-export const metadata = { title: "Pulse" };
+export const metadata = { title: "Markets" };
 
 export default function PulsePage() {
-  return <Trenches />;
+  return <MarketsPage />;
 }

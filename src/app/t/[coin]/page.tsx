@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PlayerCardTags } from "@/components/PlayerCardTags";
-import { Terminal } from "@/components/Terminal";
+import { TradeScreen } from "@/components/TradeScreen";
 import { changePct, fmtPct, fmtPrice } from "@/lib/format";
 import { getMarket } from "@/lib/hl";
 
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: m ? `${m.coin}-PERP $${fmtPrice(m.mark)}` : "Not found" };
 }
 
-/** The shareable link: player-card tags for X, the full terminal for everyone else. */
+/** The shareable link: player-card tags for X, the full trading screen for everyone else. */
 export default async function SharePage({ params }: Props) {
   const { coin } = await params;
   const market = await getMarket(coin).catch(() => null);
@@ -30,7 +30,7 @@ export default async function SharePage({ params }: Props) {
         title={`${market.coin}-PERP $${fmtPrice(market.mark)} (${chg})`}
         description={`Long or short ${market.coin} with up to ${market.maxLev}x leverage, right inside this post.`}
       />
-      <Terminal initial={market} />
+      <TradeScreen initial={market} />
     </>
   );
 }

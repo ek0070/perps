@@ -77,17 +77,17 @@ export function DepositModal({ address, onClose }: { address: `0x${string}`; onC
     }
   };
 
-  const btn = "h-9 rounded-xl border border-white/25 px-3 text-xs font-semibold transition hover:border-white hover:bg-white hover:text-black disabled:pointer-events-none disabled:opacity-35";
+  const btn = "h-9 rounded-xl border border-line px-3 text-xs font-semibold transition hover:border-accent hover:text-white disabled:pointer-events-none disabled:opacity-35";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04050a]/85 p-3" onClick={onClose}>
       <div
-        className="scroll-y max-h-full w-full max-w-[440px] rounded-2xl border border-white/15 bg-black p-4 text-left shadow-[0_0_60px_rgba(255,255,255,0.08)]"
+        className="scroll-y max-h-full w-full max-w-[440px] rounded-2xl border border-line bg-panel p-4 text-left shadow-[0_0_60px_rgba(139,92,246,0.08)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <h2 className="font-display text-sm font-extrabold uppercase tracking-[0.18em]">Deposit USDC</h2>
-          <button onClick={onClose} className="text-xs text-white/50 transition hover:text-white">
+          <button onClick={onClose} className="text-xs text-muted transition hover:text-white">
             Close
           </button>
         </div>
@@ -100,7 +100,7 @@ export function DepositModal({ address, onClose }: { address: `0x${string}`; onC
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] uppercase tracking-wider text-white/45">Your wallet (Arbitrum)</div>
+            <div className="text-[11px] uppercase tracking-wider text-muted">Your wallet (Arbitrum)</div>
             <div className="num mt-1 text-[11px] leading-snug text-white/85" style={{ whiteSpace: "normal", wordBreak: "break-all" }}>
               {address}
             </div>
@@ -120,19 +120,19 @@ export function DepositModal({ address, onClose }: { address: `0x${string}`; onC
           </li>
         </ol>
 
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 px-3 py-2 text-xs">
-          <span className="text-white/50">In wallet</span>
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-line px-3 py-2 text-xs">
+          <span className="text-muted">In wallet</span>
           <span className="flex gap-3">
             <span>
-              <Num value={usdc === null ? null : Number(formatUnits(usdc, 6)).toFixed(2)} /> <span className="text-white/45">USDC</span>
+              <Num value={usdc === null ? null : Number(formatUnits(usdc, 6)).toFixed(2)} /> <span className="text-muted">USDC</span>
             </span>
             <span>
-              <Num value={eth === null ? null : Number(formatUnits(eth, 18)).toFixed(5)} /> <span className="text-white/45">ETH</span>
+              <Num value={eth === null ? null : Number(formatUnits(eth, 18)).toFixed(5)} /> <span className="text-muted">ETH</span>
             </span>
           </span>
         </div>
 
-        <button onClick={moveToHyperliquid} disabled={!canMove} className={`${btn} mt-2 w-full border-white bg-white text-black hover:bg-white/85`}>
+        <button onClick={moveToHyperliquid} disabled={!canMove} className={`${btn} mt-2 w-full btn-brand border-transparent`}>
           {move.state === "pending" ? "Sending…" : "Move USDC to trading account"}
         </button>
 
@@ -148,7 +148,7 @@ export function DepositModal({ address, onClose }: { address: `0x${string}`; onC
           )}
         </div>
 
-        <p className="mt-1 text-[11px] leading-snug text-white/40">
+        <p className="mt-1 text-[11px] leading-snug text-muted">
           Already on Hyperliquid? Send USDC to this address from your Hyperliquid account. It arrives instantly and needs no gas.
         </p>
       </div>

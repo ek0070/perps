@@ -17,9 +17,10 @@ function leverageOptions(maxLev: number): number[] {
 
 const chip = (on: boolean) =>
   `h-8 flex-1 rounded-lg border text-xs font-semibold transition num ${
-    on ? "border-white bg-white text-black" : "border-white/20 text-white/80 hover:border-white hover:text-white"
+    on ? "border-accent bg-accent text-white" : "border-line text-white/80 hover:border-accent hover:text-white"
   }`;
 
+/** The compact ticket used by the 480x480 player: presets instead of free-form inputs. */
 export function TradePanel({ market }: { market: Market }) {
   const settings = useSettings();
   const { account } = useWallet();
@@ -37,26 +38,26 @@ export function TradePanel({ market }: { market: Market }) {
   const tooSmall = notional < MIN_NOTIONAL;
   const pos = account?.positions.find((p) => p.coin === market.coin);
 
-  const big = "h-12 flex-1 rounded-xl border font-display text-base font-extrabold uppercase tracking-[0.14em] transition disabled:pointer-events-none disabled:opacity-35";
+  const big = "h-12 flex-1 rounded-xl text-base font-extrabold uppercase tracking-[0.14em] transition hover:brightness-110 disabled:pointer-events-none disabled:opacity-35";
 
   return (
     <div className="relative flex flex-col gap-2">
       {pos && (
-        <div className="rounded-xl border border-white/15 px-2.5 py-1.5">
+        <div className="rounded-xl border border-line bg-bg/60 px-2.5 py-1.5">
           <div className="flex h-5 items-center justify-between text-xs">
             <span className="flex items-center gap-1.5">
-              <span className="font-bold uppercase">{pos.size > 0 ? "Long" : "Short"}</span>
-              <span className="num text-white/60">
+              <span className={`font-bold uppercase ${pos.size > 0 ? "text-long" : "text-short"}`}>{pos.size > 0 ? "Long" : "Short"}</span>
+              <span className="num text-muted">
                 {Math.abs(pos.size)} · {pos.leverage}x
               </span>
             </span>
-            <span className="flex items-center gap-1.5">
-              <Num value={`${pos.pnl >= 0 ? "+" : "-"}${fmtUsd(Math.abs(pos.pnl))}`} className={`font-bold ${pos.pnl >= 0 ? "" : "text-white/55"}`} />
-              <Num value={fmtPct(pos.roe, 1)} className="text-white/55" />
+            <span className={`flex items-center gap-1.5 ${pos.pnl >= 0 ? "text-long" : "text-short"}`}>
+              <Num value={`${pos.pnl >= 0 ? "+" : "-"}${fmtUsd(Math.abs(pos.pnl))}`} className="font-bold" />
+              <Num value={fmtPct(pos.roe, 1)} />
             </span>
           </div>
           <div className="mt-1 flex h-7 items-center gap-1.5 text-[11px]">
-            <span className="num mr-auto text-white/45">
+            <span className="num mr-auto text-muted">
               Entry {fmtPrice(pos.entryPx)} · Liq {pos.liqPx ? fmtPrice(pos.liqPx) : "none"}
             </span>
             {[25, 50, 100].map((pct) => (
@@ -64,7 +65,7 @@ export function TradePanel({ market }: { market: Market }) {
                 key={pct}
                 disabled={busy}
                 onClick={() => close(market, pos, pct / 100)}
-                className="num h-7 rounded-lg border border-white/20 px-2 font-semibold text-white/80 transition hover:border-white hover:bg-white hover:text-black disabled:opacity-35"
+                className="num h-7 rounded-lg border border-line px-2 font-semibold text-white/85 transition hover:border-accent hover:text-white disabled:opacity-35"
               >
                 {pct === 100 ? "Close" : `${pct}%`}
               </button>
@@ -74,7 +75,7 @@ export function TradePanel({ market }: { market: Market }) {
       )}
 
       <div className="flex items-center gap-1.5">
-        <span className="w-12 shrink-0 text-[10px] uppercase tracking-wider text-white/40">Margin</span>
+        <span className="w-12 shrink-0 text-[10px] uppercase tracking-wider text-muted">Margin</span>
         {MARGINS.map((m) => (
           <button
             key={m}
@@ -93,12 +94,12 @@ export function TradePanel({ market }: { market: Market }) {
           inputMode="decimal"
           placeholder="Custom"
           aria-label="Custom margin in USD"
-          className={`num h-8 w-0 flex-[1.3] rounded-lg border bg-transparent px-2 text-center text-xs outline-none transition placeholder:text-white/35 focus:border-white ${custom ? "border-white" : "border-white/20"}`}
+          className={`num h-8 w-0 flex-[1.3] rounded-lg border bg-bg px-2 text-center text-xs outline-none transition placeholder:text-muted/70 focus:border-accent ${custom ? "border-accent" : "border-line"}`}
         />
       </div>
 
       <div className="flex items-center gap-1.5">
-        <span className="w-12 shrink-0 text-[10px] uppercase tracking-wider text-white/40">Lev</span>
+        <span className="w-12 shrink-0 text-[10px] uppercase tracking-wider text-muted">Lev</span>
         {leverageOptions(market.maxLev).map((x) => (
           <button key={x} className={chip(lev === x)} onClick={() => setLevChoice(x)}>
             {x}x
@@ -106,11 +107,11 @@ export function TradePanel({ market }: { market: Market }) {
         ))}
       </div>
 
-      <div className="flex h-4 items-center justify-between text-[11px] text-white/45">
+      <div className="flex h-4 items-center justify-between text-[11px] text-muted">
         <span className="num">
           {tooSmall ? `Minimum position is $${MIN_NOTIONAL}` : `Position ${fmtUsd(notional)} · slippage ${settings.slippage}%`}
         </span>
-        <button onClick={() => setShowSettings(true)} className="underline-offset-2 transition hover:text-white hover:underline">
+        <button onClick={() => setShowSettings(true)} className="font-semibold text-accent transition hover:text-white">
           Settings
         </button>
       </div>
@@ -119,14 +120,14 @@ export function TradePanel({ market }: { market: Market }) {
         <button
           disabled={busy || tooSmall}
           onClick={() => open(market, true, amount, lev)}
-          className={`${big} border-white bg-white text-black hover:shadow-[0_0_28px_rgba(255,255,255,0.45)]`}
+          className={`${big} bg-long text-black shadow-[0_0_22px_rgba(22,217,164,0.35)]`}
         >
           Long
         </button>
         <button
           disabled={busy || tooSmall}
           onClick={() => open(market, false, amount, lev)}
-          className={`${big} border-white/60 text-white hover:border-white hover:bg-white/10`}
+          className={`${big} bg-short text-white shadow-[0_0_22px_rgba(255,77,116,0.35)]`}
         >
           Short
         </button>
@@ -135,14 +136,14 @@ export function TradePanel({ market }: { market: Market }) {
       <TradeStatusLine />
 
       {showSettings && (
-        <div className="absolute inset-0 z-10 flex flex-col gap-2 rounded-xl border border-white/20 bg-black p-3">
+        <div className="absolute inset-0 z-10 flex flex-col gap-2 rounded-xl border border-line bg-panel p-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-display font-extrabold uppercase tracking-[0.18em]">Settings</span>
-            <button onClick={() => setShowSettings(false)} className="text-white/50 transition hover:text-white">
+            <span className="font-extrabold uppercase tracking-[0.18em]">Settings</span>
+            <button onClick={() => setShowSettings(false)} className="font-semibold text-accent transition hover:text-white">
               Done
             </button>
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Max slippage</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted">Max slippage</div>
           <div className="flex gap-1.5">
             {SLIPPAGE_OPTIONS.map((s) => (
               <button key={s} className={chip(settings.slippage === s)} onClick={() => setSettings({ slippage: s })}>
@@ -150,7 +151,7 @@ export function TradePanel({ market }: { market: Market }) {
               </button>
             ))}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Default leverage</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted">Default leverage</div>
           <div className="flex gap-1.5">
             {[2, 5, 10, 20].map((x) => (
               <button
@@ -165,7 +166,7 @@ export function TradePanel({ market }: { market: Market }) {
               </button>
             ))}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/40">Quick-long margin</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted">Quick-long margin</div>
           <div className="flex gap-1.5">
             {QUICK_OPTIONS.map((q) => (
               <button key={q} className={chip(settings.quick === q)} onClick={() => setSettings({ quick: q })}>

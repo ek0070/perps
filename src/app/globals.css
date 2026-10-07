@@ -4,12 +4,23 @@
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Exchange palette: deep navy surfaces, violet brand, green long, red short. */
+  --color-bg: #080a12;
+  --color-panel: #0f1220;
+  --color-raised: #171b2e;
+  --color-line: #232842;
+  --color-muted: #8a92b2;
+  --color-accent: #8b5cf6;
+  --color-accent-2: #22d3ee;
+  --color-long: #16d9a4;
+  --color-short: #ff4d74;
 }
 
 html,
 body {
-  background: #000;
-  color: #fff;
+  background: #080a12;
+  color: #eef0fa;
 }
 
 body {
@@ -18,8 +29,8 @@ body {
 }
 
 ::selection {
-  background: #fff;
-  color: #000;
+  background: #8b5cf6;
+  color: #fff;
 }
 
 /* Every price and number: fixed-width digits so live updates never jitter. */
@@ -30,14 +41,14 @@ body {
   white-space: nowrap;
 }
 
-/* A value that just changed flashes white once. */
+/* A value that just changed lights up once. */
 @keyframes flash {
   0% {
     color: #fff;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 12px rgba(139, 92, 246, 0.95);
   }
   100% {
-    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    text-shadow: 0 0 0 rgba(139, 92, 246, 0);
   }
 }
 .flash {
@@ -56,15 +67,32 @@ body {
 .skel {
   display: inline-block;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(139, 146, 178, 0.14);
   animation: skel 1.4s ease-in-out infinite;
 }
 
 .glow {
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.45));
+  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.75));
 }
 .text-glow {
-  text-shadow: 0 0 42px rgba(255, 255, 255, 0.28);
+  text-shadow: 0 0 46px rgba(139, 92, 246, 0.55);
+}
+.brand-text {
+  background: linear-gradient(90deg, #a78bfa, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.btn-brand {
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  color: #fff;
+  transition:
+    filter 0.15s,
+    box-shadow 0.15s;
+}
+.btn-brand:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.5);
 }
 
 @keyframes live {
@@ -80,27 +108,50 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 9999px;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  background: #16d9a4;
+  box-shadow: 0 0 8px rgba(22, 217, 164, 0.9);
   animation: live 1.6s ease-in-out infinite;
 }
 
-/* Thin, quiet scrollbars for the lists. */
 .scroll-y {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: #2c3252 transparent;
 }
 
-/* Stepped (notched) frames used as background decoration on the About page. */
-.step-frame {
+/* Leverage slider */
+input[type="range"].lev {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 9999px;
+  background: #232842;
+  outline: none;
+}
+input[type="range"].lev::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #8b5cf6;
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+input[type="range"].lev::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #8b5cf6;
+  border: 2px solid #fff;
+  cursor: pointer;
+}
+
+/* Soft colour blooms behind the About page. */
+.bloom {
   position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 0 60px rgba(255, 255, 255, 0.05),
-    inset 0 0 60px rgba(255, 255, 255, 0.025);
-  clip-path: polygon(0 0, 72% 0, 72% 14%, 100% 14%, 100% 100%, 28% 100%, 28% 86%, 0 86%);
+  border-radius: 9999px;
+  filter: blur(110px);
   pointer-events: none;
 }
 

@@ -21,7 +21,9 @@ export type Position = {
   liqPx: number | null;
 };
 
-export type Account = { equity: number; withdrawable: number; positions: Position[] };
+export type OpenOrder = { coin: string; oid: number; isBuy: boolean; px: number; sz: number; reduceOnly: boolean; time: number };
+
+export type Account = { equity: number; withdrawable: number; marginUsed: number; positions: Position[]; orders: OpenOrder[] };
 
 type Ctx = {
   /** False when NEXT_PUBLIC_PRIVY_APP_ID is missing. */
@@ -56,7 +58,7 @@ const WalletCtx = createContext<Ctx>({
 export const useWallet = () => useContext(WalletCtx);
 
 type RawState = {
-  marginSummary: { accountValue: string };
+  marginSummary: { accountValue: string; totalMarginUsed: string };
   withdrawable: string;
   assetPositions: {
     position: {
@@ -74,17 +76,36 @@ type RawState = {
 
 // Account state is read straight from Hyperliquid by the browser (CORS is open),
 // so per-user polling counts against the user's own rate limit, not the server's.
-async function fetchAccount(user: string): Promise<Account> {
+type RawOrder = { coin: string; side: "B" | "A"; limitPx: string; sz: string; oid: number; timestamp: number; reduceOnly?: boolean };
+
+async function hlInfo<T>(body: unknown): Promise<T> {
   const res = await fetch("https://api.hyperliquid.xyz/info", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ type: "clearinghouseState", user }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`account ${res.status}`);
-  const raw = (await res.json()) as RawState;
+  return res.json() as Promise<T>;
+}
+
+async function fetchAccount(user: string): Promise<Account> {
+  const [raw, rawOrders] = await Promise.all([
+    hlInfo<RawState>({ type: "clearinghouseState", user }),
+    hlInfo<RawOrder[]>({ type: "frontendOpenOrders", user }).catch(() => [] as RawOrder[]),
+  ]);
   return {
     equity: Number(raw.marginSummary.accountValue) || 0,
     withdrawable: Number(raw.withdrawable) || 0,
+    marginUsed: Number(raw.marginSummary.totalMarginUsed) || 0,
+    orders: rawOrders.map((o) => ({
+      coin: o.coin,
+      oid: o.oid,
+      isBuy: o.side === "B",
+      px: Number(o.limitPx),
+      sz: Number(o.sz),
+      reduceOnly: !!o.reduceOnly,
+      time: o.timestamp,
+    })),
     positions: raw.assetPositions
       .map(({ position: p }) => ({
         coin: p.coin,
@@ -178,7 +199,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       appId={PRIVY_APP_ID}
       config={{
         loginMethods: ["email", "twitter"],
-        appearance: { theme: "dark", accentColor: "#ffffff" },
+        appearance: { theme: "dark", accentColor: "#8b5cf6" },
         defaultChain: arbitrum,
         supportedChains: [arbitrum],
         // Non-custodial wallet created on first login; signing happens without a

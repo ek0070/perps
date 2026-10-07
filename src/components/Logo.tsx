@@ -9,7 +9,7 @@ export function Logo({ size = 28, className = "" }: { size?: number; className?:
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={`glow shrink-0 text-white ${className}`}
+      className={`glow shrink-0 text-[#a78bfa] ${className}`}
     >
       <path
         d="M130 100 H270 A40 40 0 0 1 310 140 V230 A40 40 0 0 1 270 270 H185 L125 318 L140 270 H130 A40 40 0 0 1 90 230 V140 A40 40 0 0 1 130 100 Z"

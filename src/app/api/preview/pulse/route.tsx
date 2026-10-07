@@ -18,7 +18,7 @@ export async function GET() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "#000",
+          background: "#080a12",
           color: "#fff",
           padding: 56,
         }}
@@ -26,7 +26,7 @@ export async function GET() {
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <PreviewLogo size={60} />
           <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: 7 }}>{SITE_NAME.toUpperCase()}</div>
-          <div style={{ display: "flex", marginLeft: "auto", fontSize: 28, color: "#9a9a9a" }}>LIVE PERPS</div>
+          <div style={{ display: "flex", marginLeft: "auto", fontSize: 28, color: "#8a92b2" }}>LIVE PERPS</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", marginTop: 36, gap: 14 }}>
           {top.map((m) => {
@@ -38,7 +38,7 @@ export async function GET() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  border: "2px solid #2a2a2a",
+                  border: "2px solid #232842", background: "#0f1220",
                   borderRadius: 18,
                   padding: "14px 28px",
                   fontSize: 40,
@@ -47,7 +47,7 @@ export async function GET() {
                 <div style={{ display: "flex", fontWeight: 800 }}>{m.coin}</div>
                 <div style={{ display: "flex", gap: 40 }}>
                   <div>{`$${fmtPrice(m.mark)}`}</div>
-                  <div style={{ display: "flex", width: 210, justifyContent: "flex-end", color: chg >= 0 ? "#fff" : "#8a8a8a" }}>
+                  <div style={{ display: "flex", width: 210, justifyContent: "flex-end", color: chg >= 0 ? "#16d9a4" : "#ff4d74" }}>
                     {fmtPct(chg)}
                   </div>
                 </div>

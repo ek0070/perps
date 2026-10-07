@@ -1,5 +1,5 @@
 import { cached } from "./cache";
-import type { Candle, Interval, Market, Trade } from "./types";
+import type { Book, Candle, Interval, Market, Trade } from "./types";
 
 const API = "https://api.hyperliquid.xyz/info";
 
@@ -105,5 +105,16 @@ export function getTrades(coin: string): Promise<Trade[]> {
       .map((t) => ({ tid: t.tid, time: t.time, px: Number(t.px), sz: Number(t.sz), side: t.side }))
       .sort((a, b) => b.time - a.time || b.tid - a.tid)
       .slice(0, 40);
+  });
+}
+
+type RawLevel = { px: string; sz: string };
+
+/** Top of the order book: best 14 bids and asks. */
+export function getBook(coin: string): Promise<Book> {
+  return cached(`book:${coin}`, 1000, async () => {
+    const raw = await info<{ levels: [RawLevel[], RawLevel[]] }>({ type: "l2Book", coin });
+    const side = (levels: RawLevel[]) => levels.slice(0, 14).map((l) => ({ px: Number(l.px), sz: Number(l.sz) }));
+    return { bids: side(raw.levels[0]), asks: side(raw.levels[1]) };
   });
 }

@@ -72,7 +72,11 @@ export function DepositModal({ address, onClose }: { address: `0x${string}`; onC
       const raw = err instanceof Error ? err.message : String(err);
       setMove({
         state: "error",
-        msg: /insufficient funds|gas/i.test(raw) ? "Not enough ETH on Arbitrum to pay for gas." : raw.slice(0, 120),
+        msg: /insufficient funds|gas/i.test(raw)
+          ? "Not enough ETH on Arbitrum to pay for gas."
+          : /switch|chain|unsupported|unrecognized|4902/i.test(raw)
+            ? "This wallet could not switch to Arbitrum. Send USDC to this address from a Hyperliquid account instead."
+            : raw.slice(0, 120),
       });
     }
   };

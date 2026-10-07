@@ -1,10 +1,11 @@
 "use client";
 
 import { ExchangeClient, HttpTransport } from "@nktkas/hyperliquid";
-import { PrivyProvider, usePrivy, useWallets } from "@privy-io/react-auth";
+import { PrivyProvider, usePrivy, useWallets, type ConnectedWallet } from "@privy-io/react-auth";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createWalletClient, custom, type WalletClient } from "viem";
-import { arbitrum } from "viem/chains";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { arbitrum, mainnet } from "viem/chains";
 import { PRIVY_APP_ID } from "@/lib/site";
 
 export type Position = {
@@ -124,10 +125,57 @@ async function fetchAccount(user: string): Promise<Account> {
 
 const AUTH_CHANNEL = "tt-auth";
 
+const agentKeyName = (master: string) => `px-agent-${master.toLowerCase()}`;
+
+/**
+ * Trading client for an external wallet such as Phantom.
+ *
+ * Hyperliquid orders are signed against a fixed chain id that browser-extension
+ * wallets refuse to sign for. So, as on Hyperliquid's own site, the wallet signs
+ * once to approve an "agent" key that lives in this browser; the agent then signs
+ * orders with no further popups. An agent can trade for the account but cannot
+ * withdraw from it.
+ */
+async function agentExchange(wallet: ConnectedWallet): Promise<ExchangeClient> {
+  const master = wallet.address as `0x${string}`;
+  const transport = new HttpTransport();
+
+  let stored: string | null = null;
+  try {
+    stored = window.localStorage.getItem(agentKeyName(master));
+  } catch {}
+  if (stored) {
+    const agent = privateKeyToAccount(stored as `0x${string}`);
+    const agents = await hlInfo<{ address: string; validUntil: number | null }[]>({ type: "extraAgents", user: master }).catch(() => null);
+    const live =
+      agents === null || // lookup failed: try the stored key rather than asking for a new signature
+      agents.some((a) => a.address.toLowerCase() === agent.address.toLowerCase() && (a.validUntil === null || a.validUntil > Date.now()));
+    if (live) return new ExchangeClient({ transport, wallet: agent });
+  }
+
+  const key = generatePrivateKey();
+  const agent = privateKeyToAccount(key);
+  const provider = await wallet.getEthereumProvider();
+  const client = createWalletClient({ account: master, transport: custom(provider) });
+  // Signed on whatever chain the wallet is on; Hyperliquid accepts any, so no network switch is needed.
+  const chainId = Number(wallet.chainId.split(":")[1]) || 1;
+  const main = new ExchangeClient({ transport, wallet: client, signatureChainId: `0x${chainId.toString(16)}` });
+  await main.approveAgent({ agentAddress: agent.address, agentName: "PerpeXuals" });
+  try {
+    window.localStorage.setItem(agentKeyName(master), key);
+  } catch {}
+  return new ExchangeClient({ transport, wallet: agent });
+}
+
 function PrivyBridge({ children }: { children: React.ReactNode }) {
   const { ready, authenticated, login, logout } = usePrivy();
   const { wallets } = useWallets();
-  const wallet = useMemo(() => wallets.find((w) => w.walletClientType === "privy") ?? null, [wallets]);
+  // The embedded wallet if the user has one (email or X login); otherwise the
+  // external wallet they logged in with, e.g. Phantom.
+  const wallet = useMemo(
+    () => wallets.find((w) => w.walletClientType === "privy") ?? wallets.find((w) => w.linked) ?? null,
+    [wallets],
+  );
   const address = authenticated && wallet ? (wallet.address as `0x${string}`) : null;
 
   const [account, setAccount] = useState<Account | null>(null);
@@ -181,9 +229,11 @@ function PrivyBridge({ children }: { children: React.ReactNode }) {
   }, [wallet]);
 
   const getExchange = useCallback(async () => {
+    if (!wallet) throw new Error("Log in first.");
+    if (wallet.walletClientType !== "privy") return agentExchange(wallet);
     const client = await getWalletClient();
     return new ExchangeClient({ transport: new HttpTransport(), wallet: client });
-  }, [getWalletClient]);
+  }, [wallet, getWalletClient]);
 
   const value = useMemo<Ctx>(
     () => ({ configured: true, ready, address, account, login, logout, refresh, getWalletClient, getExchange }),
@@ -198,10 +248,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     <PrivyProvider
       appId={PRIVY_APP_ID}
       config={{
-        loginMethods: ["email", "twitter"],
-        appearance: { theme: "dark", accentColor: "#8b5cf6" },
+        loginMethods: ["wallet", "email", "twitter"],
+        // Phantom connects with its Ethereum address: Hyperliquid accounts are EVM addresses.
+        appearance: { theme: "dark", accentColor: "#8b5cf6", walletList: ["phantom"], walletChainType: "ethereum-only" },
         defaultChain: arbitrum,
-        supportedChains: [arbitrum],
+        supportedChains: [arbitrum, mainnet],
         // Non-custodial wallet created on first login; signing happens without a
         // confirmation modal so an order is one tap inside the post.
         embeddedWallets: { ethereum: { createOnLogin: "users-without-wallets" }, showWalletUIs: false },

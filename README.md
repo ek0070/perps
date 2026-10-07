@@ -35,12 +35,13 @@ build, so changing one requires a redeploy.
 ## Privy dashboard (required before anyone can log in)
 
 1. **Allowed origins**: add your site origin (and `http://localhost:3150` for local testing).
-2. **Login methods**: enable Email and Twitter/X.
+2. **Login methods**: enable Email, Twitter/X and **Wallet** (external wallets, Ethereum). The login dialog offers Phantom.
 3. **Embedded wallets**: enable **Ethereum** wallets, created on login. Hyperliquid accounts are EVM addresses.
 
 ## How trading works
 
-- Login creates an embedded EVM wallet. Its address is the user's Hyperliquid account.
+- Email or X login creates an embedded EVM wallet. Its address is the user's Hyperliquid account.
+- Phantom login uses the wallet's Ethereum address. On the first trade Phantom signs once to approve an agent key kept in the browser; the agent signs orders after that (it can trade but cannot withdraw). `node scripts/verify-agent.mjs` checks that signature.
 - Deposit: send USDC on Arbitrum to that address, then "Move USDC to trading account" sends it to the Hyperliquid
   bridge (minimum 5 USDC, needs a little ETH on Arbitrum for gas). Or send USDC to the address from an existing
   Hyperliquid account, which is instant and free.

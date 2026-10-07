@@ -39,6 +39,7 @@ export const MIN_NOTIONAL = 10;
 function explain(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err);
   if (/does not exist|insufficient margin|not enough margin/i.test(raw)) return "Not enough margin. Deposit USDC first.";
+  if (/must deposit/i.test(raw)) return "Deposit USDC before your first trade.";
   if (/could not immediately match|no liquidity/i.test(raw)) return "Not filled, the price moved. Try again or raise slippage.";
   if (/minimum value|min.*\$?10/i.test(raw)) return "Order is under the $10 minimum.";
   if (/reject|denied|cancel/i.test(raw) && /user/i.test(raw)) return "Signature was cancelled.";

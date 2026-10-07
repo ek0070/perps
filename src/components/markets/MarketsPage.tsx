@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { fmtUsd } from "@/lib/format";
-import { Logo } from "../Logo";
 import { Nav } from "../Nav";
 import { TradeStatusLine } from "../trade/TradeStatusLine";
 import { Num } from "../ui/Num";
@@ -19,7 +18,6 @@ export function MarketsPage({ embed = false }: { embed?: boolean }) {
       <div className="flex h-full min-h-0 flex-col bg-panel">
         <header className="flex h-10 shrink-0 items-center justify-between px-3">
           <Link href="/embed/pulse" className="flex items-center gap-2">
-            <Logo size={22} />
             <span className="text-xs font-extrabold uppercase tracking-[0.2em]">Markets</span>
           </Link>
           <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-muted">

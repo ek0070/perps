@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo, Wordmark } from "@/components/Logo";
+import { Wordmark } from "@/components/Logo";
 import { SITE_NAME } from "@/lib/site";
 
 export const metadata = { title: "Terms" };
@@ -36,7 +36,6 @@ export default function TermsPage() {
     <div className="mx-auto min-h-dvh max-w-2xl bg-bg px-4 pb-24 sm:px-6">
       <nav className="flex h-20 items-center">
         <Link href="/" className="flex items-center gap-3">
-          <Logo size={28} />
           <Wordmark />
         </Link>
       </nav>

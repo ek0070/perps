@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Logo, Wordmark } from "./Logo";
+import { Wordmark } from "./Logo";
 import { WalletBar } from "./wallet/WalletBar";
 
 const LINKS = [
@@ -16,8 +16,7 @@ export function Nav({ active, loginHref }: { active: "trade" | "markets"; loginH
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-line bg-panel px-3 sm:px-4">
       <div className="flex min-w-0 items-center gap-5">
         <Link href="/" className="flex items-center gap-2.5">
-          <Logo size={26} />
-          <Wordmark className="hidden sm:inline" />
+          <Wordmark />
         </Link>
         <nav className="flex items-center gap-1">
           {LINKS.map((l) => (

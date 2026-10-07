@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+html,
+body {
+  background: #000;
+  color: #fff;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+/* Every price and number: fixed-width digits so live updates never jitter. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+/* A value that just changed flashes white once. */
+@keyframes flash {
+  0% {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.95);
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+.flash {
+  animation: flash 0.7s ease-out;
+}
+
+@keyframes skel {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.skel {
+  display: inline-block;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.09);
+  animation: skel 1.4s ease-in-out infinite;
+}
+
+.glow {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.45));
+}
+.text-glow {
+  text-shadow: 0 0 42px rgba(255, 255, 255, 0.28);
+}
+
+@keyframes live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  animation: live 1.6s ease-in-out infinite;
+}
+
+/* Thin, quiet scrollbars for the lists. */
+.scroll-y {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+/* Stepped (notched) frames used as background decoration on the About page. */
+.step-frame {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 60px rgba(255, 255, 255, 0.05),
+    inset 0 0 60px rgba(255, 255, 255, 0.025);
+  clip-path: polygon(0 0, 72% 0, 72% 14%, 100% 14%, 100% 100%, 28% 100%, 28% 86%, 0 86%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash,
+  .skel,
+  .live-dot {
+    animation: none;
+  }
+}

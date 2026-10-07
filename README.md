@@ -1,4 +1,4 @@
-# Tweet Terminal (perps)
+# PerpeXuals
 
 A perpetual-futures trading terminal that renders inside X posts through X's Player Card.
 Market data and order execution are Hyperliquid; wallets are Privy embedded wallets (non-custodial).
@@ -12,7 +12,7 @@ Market data and order execution are Hyperliquid; wallets are Privy embedded wall
 | `/t/<COIN>` | The link you post. Player-card + Open Graph tags in `<head>`, the trading screen for that market in the body. |
 | `/embed/<COIN>` | The 480x480 player X frames: price, chart, wallet, Long / Short, close. |
 | `/t/pulse`, `/embed/pulse` | Share link and player for the markets table. |
-| `/about`, `/terms` | Landing page with the link maker; terms. |
+| `/terms` | Terms. |
 | `/api/markets`, `/api/markets/stream` | All markets as JSON; the same as server-sent events (`?coin=BTC` for one). |
 | `/api/candles/<COIN>`, `/api/trades/<COIN>`, `/api/book/<COIN>` | Chart candles, the recent-trades tape and the order book. |
 | `/api/preview/<COIN>`, `/api/preview/pulse` | Generated 1200x630 card images. |
@@ -26,7 +26,7 @@ Market data and order execution are Hyperliquid; wallets are Privy embedded wall
 | `NEXT_PUBLIC_SITE_URL` | yes | Public origin, no trailing slash. Goes into the card tags and share links. |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | yes, to trade | Without it the site shows data but nobody can log in. |
 | `NEXT_PUBLIC_X_HANDLE` | no | Default `@tweetterminal`. |
-| `NEXT_PUBLIC_SITE_NAME` | no | Default `Tweet Terminal`. |
+| `NEXT_PUBLIC_SITE_NAME` | no | Default `PerpeXuals`. |
 | `NEXT_PUBLIC_ARBITRUM_RPC_URL` | no | RPC the deposit dialog reads balances from. Default is the public Arbitrum endpoint. |
 
 There are no server secrets: Hyperliquid's API needs no key. `NEXT_PUBLIC_*` values are compiled into the
@@ -73,7 +73,7 @@ npx next start -p 3150
 Railway (from the project folder, after `git init` and pushing to GitHub):
 
 ```
-railway init --name tweet-terminal-perps
+railway init --name perpexuals
 railway add --service web
 railway domain                       # prints your https://...up.railway.app domain
 railway variables --service web --set NEXT_PUBLIC_SITE_URL=https://<that-domain> --set NEXT_PUBLIC_PRIVY_APP_ID=<id>

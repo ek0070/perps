@@ -7,7 +7,7 @@ import { WalletBar } from "./wallet/WalletBar";
 const LINKS = [
   { key: "trade", href: "/", label: "Trade" },
   { key: "markets", href: "/pulse", label: "Markets" },
-  { key: "about", href: "/about", label: "About" },
+  { key: "terms", href: "/terms", label: "Terms" },
 ] as const;
 
 /** Top bar shared by the trading screen and the markets page. */

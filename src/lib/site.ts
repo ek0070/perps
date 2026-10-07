@@ -5,7 +5,7 @@ export const SITE_URL = (
   (railway ? `https://${railway}` : "http://localhost:3000")
 ).replace(/\/+$/, "");
 
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || "Tweet Terminal";
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || "PerpeXuals";
 
 const handle = process.env.NEXT_PUBLIC_X_HANDLE?.trim() || "@tweetterminal";
 export const X_HANDLE = handle.startsWith("@") ? handle : `@${handle}`;
